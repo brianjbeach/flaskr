@@ -1,6 +1,6 @@
 name: Pylint
 
-on: [push]
+on: [pull_request]
 
 jobs:
   build:
@@ -10,10 +10,6 @@ jobs:
         python-version: ["3.8", "3.9", "3.10"]
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Analysing the code with pylint
+    - name: Run a code review
       run: |
-        q chat --accept-all "Run a code review on this project and list issues to the console"
+        q chat --accept-all "You are running inside a GitHub Action. Run a code review on the project and use `gh pr review` to add your feedback."
