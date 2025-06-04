@@ -1,2 +1,2 @@
-Flask==2.3.0
+Flask
 pytest
