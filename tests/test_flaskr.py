@@ -144,6 +144,59 @@ class TestFlaskr:
             # the database state is not guaranteed. In a real-world scenario,
             # you might want to set up a known database state before running this test.
 
+    def test_remove_entry_unauthorized(self, client):
+        """
+        Test that an unauthorized user cannot remove an entry.
+        """
+        # First add an entry as a logged-in user
+        client.post('/login', data={'username': 'admin', 'password': 'default'})
+        client.post('/add', data={'title': 'Test Title', 'text': 'Test Text'})
+        client.get('/logout')
+        
+        # Get the entry ID
+        with app.app_context():
+            db = get_db()
+            entry_id = db.execute('SELECT id FROM entries WHERE title = ?', ['Test Title']).fetchone()['id']
+        
+        # Try to remove the entry without being logged in
+        response = client.post(f'/remove/{entry_id}', follow_redirects=True)
+        
+        # Check that we get a 401 Unauthorized response
+        assert response.status_code == 401
+        
+        # Verify the entry still exists
+        with app.app_context():
+            db = get_db()
+            entry = db.execute('SELECT * FROM entries WHERE id = ?', [entry_id]).fetchone()
+            assert entry is not None
+            assert entry['title'] == 'Test Title'
+
+    def test_remove_entry_authorized(self, client):
+        """
+        Test that an authorized user can remove an entry.
+        """
+        # First add an entry as a logged-in user
+        client.post('/login', data={'username': 'admin', 'password': 'default'})
+        client.post('/add', data={'title': 'Test Title', 'text': 'Test Text'})
+        
+        # Get the entry ID
+        with app.app_context():
+            db = get_db()
+            entry_id = db.execute('SELECT id FROM entries WHERE title = ?', ['Test Title']).fetchone()['id']
+        
+        # Remove the entry
+        response = client.post(f'/remove/{entry_id}', follow_redirects=True)
+        
+        # Check that the removal was successful
+        assert response.status_code == 200
+        assert b'Entry was successfully removed' in response.data
+        
+        # Verify the entry no longer exists
+        with app.app_context():
+            db = get_db()
+            entry = db.execute('SELECT * FROM entries WHERE id = ?', [entry_id]).fetchone()
+            assert entry is None
+
 
 
 class AuthActions(object):
