@@ -13,7 +13,14 @@
   {% endif %}
   <ul class=entries>
   {% for entry in entries %}
-    <li><h2>{{ entry.title }}</h2>{{ entry.text|safe }}
+    <li>
+      <h2>{{ entry.title }}</h2>{{ entry.text|safe }}
+      {% if session.logged_in %}
+        <form action="{{ url_for('remove_entry', entry_id=entry.id) }}" method=post class=remove-entry style="display: inline;">
+          <input type=submit value="Delete" onclick="return confirm('Are you sure you want to delete this entry?');">
+        </form>
+      {% endif %}
+    </li>
   {% else %}
     <li><em>Unbelievable.  No entries here so far</em>
   {% endfor %}
