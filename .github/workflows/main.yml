@@ -16,4 +16,4 @@ jobs:
           kiro-cli chat \
             --agent code-reviewer \
             --trust-all-tools \
-            "Review the following changed files in this PR and provide a summary of findings: ${{ steps.changed.outputs.files }}"
+            "Review the files in this repository and provide a summary of findings"
