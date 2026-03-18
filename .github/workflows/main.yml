@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   code-review:
-    runs-on: [self-hosted, code-reviewer]
+    runs-on: self-hosted
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
